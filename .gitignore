@@ -1,0 +1,15 @@
+*/*/*.csproj
+*/*/*.sln
+*/*/.idea/
+*/*/Library/
+*/*/Temp/
+*/*/obj/
+*/*/builds/
+*/*/ServerData/
+*/*/Logs/
+Library/
+Logs/
+Temp/
+Bundles/
+Sandbox/
+obj/

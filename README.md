@@ -24,9 +24,7 @@ Assembly Definition是Unity2017.3以后出的一个功能，主要在于解决�
 
 AOT程序集是随包一起打出，不会被更新的代码
 
-在当前框架定义下，Assembly-CSharp为主AOT程序集，用AssemblyDefinition划分其他AOT
-
-程序集
+在当前框架定义下，Assembly-CSharp为主AOT程序集，用AssemblyDefinition划分其他AOT程序集
 
 #### 热更新程序集
 
@@ -52,21 +50,21 @@ HybridCLR在每次出包时，需要编译热更新代码，执行CompileDll-Act
 
 ## 热更新运行流程
 
-![热更新流程图](热更新流程图.png)
+![热更新流程图](README/热更新流程图.png)
 
 ## 项目文件结构
 
-![项目文件结构](项目文件结构.png)
+![项目文件结构](README/项目文件结构.png)
 
 ## 整合工具说明
 
 因为YooAssets和HybridCLR都是通过UnityPackageManager加载的，导致很多代码不够好用又无法修改，所以通过编辑器代码写了一套整合工具，使得两个第三方库可以配合的更好
 
-![整合工具说明](整合工具说明.png)
+![整合工具说明](README/整合工具说明.png)
 
 ## 打包流程
 
-![打包逻辑](打包逻辑.png)
+![打包逻辑](README/打包逻辑.png)
 
 ### 第一次打APK包
 
@@ -100,9 +98,7 @@ HybridCLR在每次出包时，需要编译热更新代码，执行CompileDll-Act
 
 ### 热更新部分代码及资源改动
 
-1.执行整合工具-生成热更新dll并复制进文件夹
-
-2.执行整合工具-打增量AB包
+执行整合工具-打增量AB包
 
 
 

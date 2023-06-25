@@ -8,17 +8,10 @@ using UnityEngine;
 [InitializeOnLoadAttribute]
 public static class SceneHelper
 {
-    public static int IsRunStartScene = 0;
     public static string StartSceneName = "StartScene";
-    public const string MenuName = "整合工具/场景管理/自动运行初始场景场景";
+    public const string MenuName = "整合工具/场景管理/自动运行初始场景";
     static SceneHelper()
     {
-        //EditorApplication.update += ()=> {
-        //    if (EditorApplication.isPlayingOrWillChangePlaymode&& !EditorApplication.isPlaying)
-        //    {
-        //        Debug.Log("test");
-        //    }
-        //};
         EditorApplication.playModeStateChanged += OnPlayerModeStateChanged;
     }
     private static void OnPlayerModeStateChanged(PlayModeStateChange playModeState)

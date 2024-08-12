@@ -14,6 +14,7 @@ using YooAsset.Editor;
 using YooAsset;
 using Newtonsoft.Json;
 using System.Xml;
+using Unity.VisualScripting;
 
 public class BuildHelper
 {
@@ -29,6 +30,7 @@ public class BuildHelper
     public static string HotUpdateAssetsPath = string.Format("{0}/HotUpdateAssets/", Application.dataPath);
 
     public static string HotUpdateDllPath = string.Format("{0}HotUpdateDll/", HotUpdateAssetsPath);
+
     /// <summary>
     /// 版本文件名
     /// </summary>
@@ -40,6 +42,7 @@ public class BuildHelper
     public static string HotFixDllGroupName = "HotUpdateDll";
 
     public static string AOTDLLGroupName = "AOT";
+
     // Start is called before the first frame update
     static string[] GetBuildScenes()
     {
@@ -51,6 +54,7 @@ public class BuildHelper
             if (e.enabled)
                 names.Add(e.path);
         }
+
         return names.ToArray();
     }
 
@@ -65,7 +69,8 @@ public class BuildHelper
 
         var versionString = File.ReadAllText(Application.streamingAssetsPath + VersionFileName);
 
-        var buildPath = $"{PackageExportPath}{PlayerSettings.productName}_{versionString}_{DateTime.Now.ToString("yyyy_M_d_HH_mm_s")}";
+        var buildPath =
+            $"{PackageExportPath}{PlayerSettings.productName}_{versionString}_{DateTime.Now.ToString("yyyy_M_d_HH_mm_s")}";
         var buildTarget = EditorUserBuildSettings.activeBuildTarget;
 
         switch (buildTarget)
@@ -74,6 +79,7 @@ public class BuildHelper
                 buildPath = buildPath + ".apk";
                 break;
         }
+
         buildPlayerOptions.locationPathName = buildPath;
         buildPlayerOptions.target = buildTarget;
         buildPlayerOptions.options = BuildOptions.None;
@@ -82,10 +88,12 @@ public class BuildHelper
 
         EditorUtility.ClearProgressBar();
     }
+
     [MenuItem("整合工具/打初始AB包")]
     public static void BuildOriginAssetBundle()
     {
         #region 获取资源版本
+
         CreateVersionFile();
         var versionString = File.ReadAllText(Application.streamingAssetsPath + VersionFileName);
         //var versionStringArray = versionString.Split(".");
@@ -94,11 +102,14 @@ public class BuildHelper
         #endregion
 
         #region 打包DLL并重命名,放入热更新文件夹作为RawFile打包
+
         GenerateAOTDllListFile();
         BuildAndCopyHotUpdateDll();
+
         #endregion
 
-        #region 
+        #region
+
         //version++;
         string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
         BuildParameters buildParameters = new BuildParameters();
@@ -138,12 +149,15 @@ public class BuildHelper
             Debug.Log("初始AB包打完");
             EditorUtility.RevealInFinder(buildResult.OutputPackageDirectory);
         }
+
         #endregion
     }
+
     [MenuItem("整合工具/打增量AB包")]
     public static void BuildIncreasinglyAssetBundle()
     {
         #region 获取资源版本
+
         var versionString = File.ReadAllText(Application.streamingAssetsPath + VersionFileName);
         var versionStringArray = versionString.Split(".");
         var version = int.Parse(String.Join("", versionStringArray));
@@ -151,11 +165,14 @@ public class BuildHelper
         #endregion
 
         #region 打包DLL并重命名,放入热更新文件夹作为RawFile打包
+
         //GenerateAOTDllListFile();
         BuildAndCopyHotUpdateDll();
+
         #endregion
 
-        #region 
+        #region
+
         version++;
         string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
         BuildParameters buildParameters = new BuildParameters();
@@ -196,8 +213,10 @@ public class BuildHelper
             Debug.Log("增量AB包打完");
             EditorUtility.RevealInFinder(buildResult.OutputPackageDirectory);
         }
+
         #endregion
     }
+
     [MenuItem("整合工具/生成AOT补充文件并复制进文件夹")]
     public static void GenerateAOTDllListFile()
     {
@@ -245,6 +264,7 @@ public class BuildHelper
                 Debug.Log($"{dllName}不存在");
                 continue;
             }
+
             var dllData = File.ReadAllBytes(dllPath);
             dllDatas.Add(dllName, dllData);
         }
@@ -259,6 +279,7 @@ public class BuildHelper
         AssetDatabase.Refresh();
         Debug.Log("AOT补充文件生成完毕");
     }
+
     [MenuItem("整合工具/生成热更新Dll并复制进文件夹")]
     public static void BuildAndCopyHotUpdateDll()
     {
@@ -275,10 +296,12 @@ public class BuildHelper
             AssemblyDefinitionAsset ada = (AssemblyDefinitionAsset)sp.objectReferenceValue;
             dllNames.Add(ada.name + ".dll");
         }
+
         foreach (SerializedProperty sp in _hotUpdateAssemblies)
         {
             dllNames.Add(sp.stringValue + ".dll");
         }
+
         CompileDllCommand.CompileDllActiveBuildTarget();
 
         var dllExportPath = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(EditorUserBuildSettings.activeBuildTarget);
@@ -292,6 +315,7 @@ public class BuildHelper
                 Debug.Log($"{dllName}不存在");
                 continue;
             }
+
             var dllData = File.ReadAllBytes(dllPath);
             dllDatas.Add(dllName, dllData);
         }
@@ -309,6 +333,7 @@ public class BuildHelper
                 }
             }
         }
+
         var json = JsonConvert.SerializeObject(dllNames);
         File.WriteAllText($"{HotUpdateDllPath}/HotUpdateDLLList.txt", json);
         foreach (var dllName in dllDatas.Keys)
@@ -316,9 +341,11 @@ public class BuildHelper
             var dllPath = HotUpdateDllPath + "/" + dllName + ".bytes";
             File.WriteAllBytes(dllPath, dllDatas[dllName]);
         }
+
         AssetDatabase.Refresh();
         Debug.Log("生成热更新Dll成功");
     }
+
     private static List<Type> GetEncryptionServicesClassTypes()
     {
         return EditorTools.GetAssignableTypes(typeof(IEncryptionServices));
@@ -332,8 +359,10 @@ public class BuildHelper
         {
             Directory.Delete(path, true);
         }
+
         Debug.Log("沙盒文件夹删除成功");
     }
+
     [MenuItem("整合工具/删除本地AB包数据并重新创建版本文件")]
     public static void DeleteAssetBundlesDataAndVersionFile()
     {
@@ -349,6 +378,45 @@ public class BuildHelper
         Debug.Log("创建版本文件完成，当前版本为:" + version);
     }
 
+    /// <summary>
+    /// 获取HybridCLR生成的Link文件
+    /// </summary>
+    public static Dictionary<string, List<string>> GetHybridCLRLinkFile(XmlDocument xml)
+    {
+        XmlNode linker = xml.SelectSingleNode(xml.DocumentElement.Name);
+        XmlNodeList assemblyList = linker.ChildNodes;
+
+        Dictionary<string, List<string>> assemblyDic = new Dictionary<string, List<string>>();
+        int count = 0;
+        foreach (var typeListItem in assemblyList)
+        {
+            var typeListElement = (XmlElement)typeListItem;
+            var assemblyNmae = typeListElement.GetAttribute("fullname");
+            if (!assemblyDic.ContainsKey(assemblyNmae))
+            {
+                assemblyDic.Add(assemblyNmae, new List<string>());
+            }
+
+            var typeListNodeList = (XmlNode)typeListItem;
+            foreach (var typeItem in typeListNodeList.ChildNodes)
+            {
+                var typeElement = (XmlElement)typeItem;
+                var typeName = typeElement.GetAttribute("fullname");
+                if (!assemblyDic[assemblyNmae].Contains(typeName))
+                {
+                    assemblyDic[assemblyNmae].Add(typeName);
+                }
+
+                count++;
+                EditorUtility.DisplayProgressBar("Find Class", typeName,
+                    count / (float)typeListNodeList.ChildNodes.Count);
+            }
+        }
+
+        return assemblyDic;
+    }
+
+
     [MenuItem("整合工具/补全热更新预制体依赖")]
     public static void SupplementPrefabDependent()
     {
@@ -356,7 +424,23 @@ public class BuildHelper
         string[] dirs = { "Assets/HotUpdateAssets" };
         var asstIds = AssetDatabase.FindAssets("t:Prefab", dirs);
         var count = 0;
-        Dictionary<string, List<string>> increasinglyAssemblyDic = new Dictionary<string, List<string>>();
+
+        string filePath = @$"{Application.dataPath}\HybridCLRData\Generated\link.xml";
+
+        var data = File.ReadAllText(filePath);
+
+        XmlDocument xml = new XmlDocument();
+        xml.LoadXml(data);
+
+        Dictionary<string, List<string>> assemblyDic = GetHybridCLRLinkFile(xml);
+
+        Dictionary<string, List<string>> increasinglyAssemblyDic = new Dictionary<string, List<string>>(assemblyDic);
+
+        var bindingFlags = BindingFlags.Instance |
+                           BindingFlags.Static |
+                           BindingFlags.Public |
+                           BindingFlags.NonPublic |
+                           BindingFlags.DeclaredOnly;
         //遍历所有预制体
         for (int i = 0; i < asstIds.Length; i++)
         {
@@ -367,103 +451,50 @@ public class BuildHelper
             //遍历预制体所有组件
             foreach (var com in coms)
             {
-                var type = com.GetType();
-                var Fields = type.GetFields();
-                string typeName = type.FullName;
-                var assemblyName = type.Assembly.GetName();
-                if (typeName.StartsWith("UnityEngine") || typeName.StartsWith("TMPro"))
+                if (com == null)
                 {
-                    if (!increasinglyAssemblyDic.ContainsKey(assemblyName.Name))
+                    continue;
+                }
+
+                var type = com.GetType();
+                string typeName = type.FullName;
+                var memberInfos = type.GetMembers(bindingFlags);
+                //获取组件的变量，如果变量是Unity对象，则再获取一次变量类型
+                foreach (var memberInfo in memberInfos)
+                {
+                    if (memberInfo.MemberType == MemberTypes.Field ||
+                        memberInfo.MemberType == MemberTypes.Property)
                     {
-                        increasinglyAssemblyDic.Add(assemblyName.Name, new List<string>());
-                    }
-                    if (!increasinglyAssemblyDic[assemblyName.Name].Contains(typeName))
-                    {
-                        increasinglyAssemblyDic[assemblyName.Name].Add(typeName);
-                    }
-                    var propertyInfos = type.GetProperties();
-                    //获取组件的属性，如果属性是Unity对象，则再获取一次属性
-                    foreach (var propertyInfo in propertyInfos)
-                    {
-                        var propertyInfoAssemblyName = propertyInfo.PropertyType.Assembly.GetName().Name;
-                        var propertyInfoTypeName = propertyInfo.PropertyType.FullName;
+                        var memberAssemblyName = memberInfo.Module.Assembly.GetName().Name;
+                        var memberTypeName = memberInfo.ReflectedType.FullName;
                         if (typeName.StartsWith("UnityEngine") || typeName.StartsWith("TMPro"))
                         {
-                            if (!increasinglyAssemblyDic.ContainsKey(propertyInfoAssemblyName))
+                            if (!increasinglyAssemblyDic.ContainsKey(memberAssemblyName))
                             {
-                                increasinglyAssemblyDic.Add(propertyInfoAssemblyName, new List<string>());
+                                increasinglyAssemblyDic.Add(memberAssemblyName, new List<string>());
                             }
-                            if (!increasinglyAssemblyDic[propertyInfoAssemblyName].Contains(propertyInfoTypeName))
+
+                            if (!increasinglyAssemblyDic[memberAssemblyName]
+                                    .Contains(memberTypeName))
                             {
-                                increasinglyAssemblyDic[propertyInfoAssemblyName].Add(propertyInfoTypeName);
-                            }
-                        }
-                        if (propertyInfo.PropertyType.BaseType == typeof(UnityEngine.Object))
-                        {
-                            //为了确保大部分类都被获取到，直接获取组件的属性类
-                            foreach (var property in propertyInfo.PropertyType.GetProperties())
-                            {
-                                var propertyType = property.PropertyType.GetType();
-                                if (property.PropertyType.IsArray)
+                                if (!increasinglyAssemblyDic[memberAssemblyName].Contains(memberTypeName))
                                 {
-                                    propertyType = property.PropertyType.GetElementType();
-                                }
-                                propertyInfoAssemblyName = propertyType.Assembly.GetName().Name;
-                                propertyInfoTypeName = propertyType.FullName;
-                                if (typeName.StartsWith("UnityEngine") || typeName.StartsWith("TMPro"))
-                                {
-                                    if (!increasinglyAssemblyDic.ContainsKey(propertyInfoAssemblyName))
-                                    {
-                                        increasinglyAssemblyDic.Add(propertyInfoAssemblyName, new List<string>());
-                                    }
-                                    if (!increasinglyAssemblyDic[propertyInfoAssemblyName].Contains(propertyInfoTypeName))
-                                    {
-                                        increasinglyAssemblyDic[propertyInfoAssemblyName].Add(propertyInfoTypeName);
-                                    }
+                                    increasinglyAssemblyDic[memberAssemblyName].Add(memberTypeName);
                                 }
                             }
                         }
                     }
                 }
             }
+
             count++;
             EditorUtility.DisplayProgressBar("Find Class", pfb.name, count / (float)asstIds.Length);
         }
-        
+
         EditorUtility.DisplayProgressBar("Progress", "ReadLink.xml", 0);
-        string filePath = @$"{Application.dataPath}\HybridCLRData\Generated\link.xml";
 
-        var data = File.ReadAllText(filePath);
-
-        XmlDocument xml = new XmlDocument();
-        xml.LoadXml(data);
         XmlNode linker = xml.SelectSingleNode(xml.DocumentElement.Name);
         XmlNodeList assemblyList = linker.ChildNodes;
-
-        Dictionary<string, List<string>> assemblyDic = new Dictionary<string, List<string>>();
-        count = 0;
-        foreach (var typeListItem in assemblyList)
-        {
-            var typeListElement = (XmlElement)typeListItem;
-            var assemblyNmae = typeListElement.GetAttribute("fullname");
-            if (!assemblyDic.ContainsKey(assemblyNmae))
-            {
-                assemblyDic.Add(assemblyNmae, new List<string>());
-            }
-            var typeListNodeList = (XmlNode)typeListItem;
-            foreach (var typeItem in typeListNodeList.ChildNodes)
-            {
-                var typeElement = (XmlElement)typeItem;
-                var typeName = typeElement.GetAttribute("fullname");
-                if (!assemblyDic[assemblyNmae].Contains(typeName))
-                {
-                    assemblyDic[assemblyNmae].Add(typeName);
-                }
-                count++;
-                EditorUtility.DisplayProgressBar("Find Class", typeName, count / (float)typeListNodeList.ChildNodes.Count);
-            }
-        }
-
         foreach (var assemblyName in increasinglyAssemblyDic.Keys)
         {
             if (!assemblyDic.ContainsKey(assemblyName))
@@ -478,9 +509,11 @@ public class BuildHelper
                     typeNode.SetAttribute("preserve", "all");
                     assemblyNode.AppendChild(typeNode);
                 }
+
                 linker.AppendChild(assemblyNode);
                 continue;
             }
+
             foreach (var typeName in increasinglyAssemblyDic[assemblyName])
             {
                 if (!assemblyDic[assemblyName].Contains(typeName))
@@ -499,12 +532,13 @@ public class BuildHelper
                 }
             }
         }
+
         xml.Save($"{Application.dataPath}/link.xml");
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
     }
 
-    public static void GetUnityAssembly(object[] objects,ref Dictionary<string, List<string>> dic)
+    public static void GetUnityAssembly(object[] objects, ref Dictionary<string, List<string>> dic)
     {
         foreach (var obj in objects)
         {
@@ -517,6 +551,7 @@ public class BuildHelper
                 {
                     dic.Add(assemblyName.Name, new List<string>());
                 }
+
                 if (!dic[assemblyName.Name].Contains(typeName))
                 {
                     dic[assemblyName.Name].Add(typeName);
@@ -524,6 +559,7 @@ public class BuildHelper
             }
         }
     }
+
     //[MenuItem("整合工具/读取XML测试")]
     public static void ReadXML()
     {
@@ -553,6 +589,7 @@ public class BuildHelper
                 Debug.Log($"{typeElement.GetAttribute("fullname")} Type");
             }
         }
+
         var testElement = xml.CreateElement(linker.FirstChild.Name);
         testElement.SetAttribute("fullname", "test");
         var subTestElement = xml.CreateElement(linker.FirstChild.FirstChild.Name);
@@ -563,6 +600,7 @@ public class BuildHelper
         xml.Save($"{Application.dataPath}/Test.xml");
         AssetDatabase.Refresh();
     }
+
     //[MenuItem("整合工具/读取预制体测试")]
     public static void ReadPrefabs()
     {
@@ -607,19 +645,23 @@ public class BuildHelper
                     {
                         assemblyDic.Add(assemblyName.Name, new List<string>());
                     }
+
                     if (!assemblyDic[assemblyName.Name].Contains(typeName))
                     {
                         assemblyDic[assemblyName.Name].Add(typeName);
                     }
                 }
             }
+
             count++;
             EditorUtility.DisplayProgressBar("Find Class", pfb.name, count / (float)asstIds.Length);
         }
+
         for (int i = 0; i < classList.Count; i++)
         {
             classList[i] = string.Format("<type fullname=\"{0}\" preserve=\"all\"/>", classList[i]);
         }
+
         EditorUtility.ClearProgressBar();
         Debug.Log("完成读取预制体");
     }

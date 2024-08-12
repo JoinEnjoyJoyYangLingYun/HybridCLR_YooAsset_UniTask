@@ -17,7 +17,7 @@ using static FsmInitialize;
 public class Test : MonoBehaviour
 {
     /// <summary>
-    /// ×ÊÔ´ÏµÍ³ÔËĞĞÄ£Ê½
+    /// èµ„æºç³»ç»Ÿè¿è¡Œæ¨¡å¼
     /// </summary>
     public EPlayMode PlayMode = EPlayMode.EditorSimulateMode;
 
@@ -40,25 +40,25 @@ public class Test : MonoBehaviour
         //cts.CancelAfterSlim(TimeSpan.FromSeconds(3));
         //try
         //{
-        //    Debug.Log("·¢Æğ»ñÈ¡°æ±¾ÇëÇó");
+        //    Debug.Log("å‘èµ·è·å–ç‰ˆæœ¬è¯·æ±‚");
         //    await request.SendWebRequest().WithCancellation(cts.Token);
         //}
         //catch (OperationCanceledException ex)
         //{
         //    if (ex.CancellationToken == cts.Token)
         //    {
-        //        Debug.Log("»ñÈ¡°æ±¾ÎÄ¼şÊ§°Ü!");
+        //        Debug.Log("è·å–ç‰ˆæœ¬æ–‡ä»¶å¤±è´¥!");
         //    }
         //}
-        //Debug.Log("¶ÁÈ¡°æ±¾");
+        //Debug.Log("è¯»å–ç‰ˆæœ¬");
         //var data = request.downloadHandler.text;
         //Debug.Log(data);
         //Version = data;
-        // ³õÊ¼»¯×ÊÔ´ÏµÍ³
-        Debug.Log("¿ªÊ¼ÊµÀı»¯Yooasset");
+        // åˆå§‹åŒ–èµ„æºç³»ç»Ÿ
+        Debug.Log("å¼€å§‹å®ä¾‹åŒ–Yooasset");
         YooAssets.Initialize();
         YooAssets.SetOperationSystemMaxTimeSlice(30);
-        // ´´½¨Ä¬ÈÏµÄ×ÊÔ´°ü
+        // åˆ›å»ºé»˜è®¤çš„èµ„æºåŒ…
         string packageName = PackageName;
         TestPackage = YooAssets.TryGetPackage(packageName);
         if (TestPackage == null)
@@ -67,7 +67,7 @@ public class Test : MonoBehaviour
             YooAssets.SetDefaultPackage(TestPackage);
         }
         InitializationOperation initializationOperation = null;
-        // ÉèÖÃ¸Ã×ÊÔ´°üÎªÄ¬ÈÏµÄ×ÊÔ´°ü£¬¿ÉÒÔÊ¹ÓÃYooAssetsÏà¹Ø¼ÓÔØ½Ó¿Ú¼ÓÔØ¸Ã×ÊÔ´°üÄÚÈİ¡£
+        // è®¾ç½®è¯¥èµ„æºåŒ…ä¸ºé»˜è®¤çš„èµ„æºåŒ…ï¼Œå¯ä»¥ä½¿ç”¨YooAssetsç›¸å…³åŠ è½½æ¥å£åŠ è½½è¯¥èµ„æºåŒ…å†…å®¹ã€‚
         if (PlayMode == EPlayMode.EditorSimulateMode)
         {
             var createParameters = new EditorSimulateModeParameters();
@@ -75,7 +75,7 @@ public class Test : MonoBehaviour
             initializationOperation = TestPackage.InitializeAsync(createParameters);
         }
 
-        // µ¥»úÔËĞĞÄ£Ê½
+        // å•æœºè¿è¡Œæ¨¡å¼
         if (PlayMode == EPlayMode.OfflinePlayMode)
         {
             var createParameters = new OfflinePlayModeParameters();
@@ -83,7 +83,7 @@ public class Test : MonoBehaviour
             initializationOperation = TestPackage.InitializeAsync(createParameters);
         }
 
-        // Áª»úÔËĞĞÄ£Ê½
+        // è”æœºè¿è¡Œæ¨¡å¼
         if (PlayMode == EPlayMode.HostPlayMode)
         {
             var createParameters = new HostPlayModeParameters();
@@ -94,10 +94,10 @@ public class Test : MonoBehaviour
             initializationOperation = TestPackage.InitializeAsync(createParameters);
         }
         await initializationOperation.ToUniTask();
-        Debug.Log("Yooasset³õÊ¼»¯Íê³É");
+        Debug.Log("Yooassetåˆå§‹åŒ–å®Œæˆ");
         if (TestPackage.InitializeStatus != EOperationStatus.Succeed)
         {
-            Debug.Log("×ÊÔ´°ü¼ÓÔØÊ§°Ü");
+            Debug.Log("èµ„æºåŒ…åŠ è½½å¤±è´¥");
             return;
         }
         await LoadMetadataForAOTAssemblies();
@@ -124,16 +124,16 @@ public class Test : MonoBehaviour
             await obj.ToUniTask();
             if (obj.Result == null)
             {
-                Debug.Log("¼ÓÔØÔ¤ÖÆÌåÎª¿Õ");
+                Debug.Log("åŠ è½½é¢„åˆ¶ä½“ä¸ºç©º");
             }
             obj.Result.transform.parent = GameObject.Find("Canvas").transform;
-            Debug.Log("Ö´ĞĞ·½·¨");
+            Debug.Log("æ‰§è¡Œæ–¹æ³•");
         }
         
     }
     private string GetHostServerURL()
     {
-        //string hostServerIP = "http://10.0.2.2"; //°²×¿Ä£ÄâÆ÷µØÖ·
+        //string hostServerIP = "http://10.0.2.2"; //å®‰å“æ¨¡æ‹Ÿå™¨åœ°å€
         string hostServerIP = HttpHost;
         string gameVersion = Version;
 
@@ -166,7 +166,7 @@ public class Test : MonoBehaviour
         cts.CancelAfterSlim(TimeSpan.FromSeconds(3));
         try
         {
-            Debug.Log("·¢ÆğÇëÇó"+path);
+            Debug.Log("å‘èµ·è¯·æ±‚"+path);
             await request.SendWebRequest().WithCancellation(cts.Token);
         }
         catch (OperationCanceledException ex)
@@ -194,7 +194,7 @@ public class Test : MonoBehaviour
         cts.CancelAfterSlim(TimeSpan.FromSeconds(3));
         try
         {
-            Debug.Log("·¢ÆğÇëÇó" + path);
+            Debug.Log("å‘èµ·è¯·æ±‚" + path);
             await request.SendWebRequest().WithCancellation(cts.Token);
         }
         catch (OperationCanceledException ex)
@@ -231,7 +231,7 @@ public class Test : MonoBehaviour
             var data = handle.GetRawFileData();
             Assembly assembly = Assembly.Load(data);
             HotUpdateAssemblies.Add(DllName, assembly);
-            Debug.Log($"¼ÓÔØÈÈ¸üĞÂDll:{DllName}");
+            Debug.Log($"åŠ è½½çƒ­æ›´æ–°Dll:{DllName}");
         }
     }
     public async UniTask LoadMetadataForAOTAssemblies()
@@ -244,8 +244,8 @@ public class Test : MonoBehaviour
             "System.Runtime.dll",
             "UniTask.dll"
         };
-        /// ×¢Òâ£¬²¹³äÔªÊı¾İÊÇ¸øAOT dll²¹³äÔªÊı¾İ£¬¶ø²»ÊÇ¸øÈÈ¸üĞÂdll²¹³äÔªÊı¾İ¡£
-        /// ÈÈ¸üĞÂdll²»È±ÔªÊı¾İ£¬²»ĞèÒª²¹³ä£¬Èç¹ûµ÷ÓÃLoadMetadataForAOTAssembly»á·µ»Ø´íÎó
+        /// æ³¨æ„ï¼Œè¡¥å……å…ƒæ•°æ®æ˜¯ç»™AOT dllè¡¥å……å…ƒæ•°æ®ï¼Œè€Œä¸æ˜¯ç»™çƒ­æ›´æ–°dllè¡¥å……å…ƒæ•°æ®ã€‚
+        /// çƒ­æ›´æ–°dllä¸ç¼ºå…ƒæ•°æ®ï¼Œä¸éœ€è¦è¡¥å……ï¼Œå¦‚æœè°ƒç”¨LoadMetadataForAOTAssemblyä¼šè¿”å›é”™è¯¯
         /// 
         HomologousImageMode mode = HomologousImageMode.SuperSet;
         foreach (var aotDllName in aotMetaAssemblyFiles)
@@ -257,7 +257,7 @@ public class Test : MonoBehaviour
             {
                 continue;
             }
-            // ¼ÓÔØassembly¶ÔÓ¦µÄdll£¬»á×Ô¶¯ÎªËühook¡£Ò»µ©aot·ºĞÍº¯ÊıµÄnativeº¯Êı²»´æÔÚ£¬ÓÃ½âÊÍÆ÷°æ±¾´úÂë
+            // åŠ è½½assemblyå¯¹åº”çš„dllï¼Œä¼šè‡ªåŠ¨ä¸ºå®ƒhookã€‚ä¸€æ—¦aotæ³›å‹å‡½æ•°çš„nativeå‡½æ•°ä¸å­˜åœ¨ï¼Œç”¨è§£é‡Šå™¨ç‰ˆæœ¬ä»£ç 
             LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(data, mode);
             Debug.Log($"LoadMetadataForAOTAssembly:{aotDllName}. mode:{mode} ret:{err}");
         }
